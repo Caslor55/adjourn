@@ -1,4 +1,4 @@
-const CACHE = "adjourn-v1";
+const CACHE = "adjourn-v2";
 const ASSETS = ["./adjourn.html", "./manifest.webmanifest", "./icon-180.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
