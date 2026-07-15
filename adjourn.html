@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Adjourn</title>
+<meta name="theme-color" content="#0f0d0b">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Adjourn">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+  :root{
+    --bg:#0f0d0b; --panel:#171310; --panel2:#1d1813; --line:#2b241c;
+    --ink:#e7dcc8; --muted:#8d8170; --dim:#5c5346;
+    --ember:#35513a; --amber:#7e9873; --ok:#a3b18a; --warn:#a8623d;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{background:var(--bg);}
+  body{
+    font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    background:
+      radial-gradient(1200px 500px at 50% -10%, rgba(53,81,58,.14), transparent 60%),
+      var(--bg);
+    color:var(--ink); min-height:100vh; display:flex; justify-content:center;
+    padding:48px 20px 80px;
+  }
+  .wrap{width:100%; max-width:560px; animation:rise .9s ease both;}
+  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+
+  header{text-align:center; margin-bottom:40px;}
+  .brand{font-size:12px; letter-spacing:.42em; text-transform:uppercase; color:var(--amber); margin-bottom:14px;}
+  h1{font-size:30px; font-weight:500; letter-spacing:.01em;}
+  .date{color:var(--muted); font-size:14px; margin-top:8px; font-style:italic;}
+  .epigraph{color:var(--dim); font-size:13.5px; font-style:italic; margin-top:18px; line-height:1.6;}
+
+  section{
+    background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line); border-radius:10px;
+    padding:24px 26px; margin-bottom:22px;
+  }
+  .label{
+    font-size:11px; letter-spacing:.34em; text-transform:uppercase;
+    color:var(--amber); margin-bottom:6px;
+  }
+  .sub{color:var(--muted); font-size:13px; line-height:1.55; margin-bottom:18px; font-style:italic;}
+
+  .row{
+    display:flex; align-items:center; gap:14px;
+    padding:12px 4px; border-bottom:1px solid var(--line); cursor:pointer;
+    user-select:-webkit-user-select; user-select:none; transition:opacity .2s;
+  }
+  .row:last-of-type{border-bottom:none;}
+  .row:hover .mark{border-color:var(--amber);}
+  .mark{
+    width:22px; height:22px; min-width:22px; border-radius:50%;
+    border:1px solid var(--dim); display:flex; align-items:center; justify-content:center;
+    transition:all .25s; font-size:12px; color:transparent;
+  }
+  .row.on .mark{background:var(--ember); border-color:var(--ember); color:#f4e9d8;}
+  .row .txt{flex:1;}
+  .row .name{font-size:15.5px;}
+  .row.on .name{color:var(--ink);}
+  .row .hint{font-size:12.5px; color:var(--dim); margin-top:2px; font-style:italic;}
+  .row.on .hint{color:var(--muted);}
+
+  .moods{display:flex; gap:10px; margin-top:16px;}
+  .mood{
+    flex:1; text-align:center; padding:11px 6px; border:1px solid var(--line);
+    border-radius:8px; color:var(--muted); font-size:13.5px; cursor:pointer;
+    font-style:italic; transition:all .25s; background:transparent; font-family:inherit;
+  }
+  .mood:hover{border-color:var(--dim);}
+  .mood.on{border-color:var(--amber); color:var(--ink); background:rgba(126,152,115,.10);}
+
+  .adjourn-btn{
+    width:100%; margin-top:22px; padding:15px; border-radius:8px;
+    border:1px solid var(--ember); background:rgba(53,81,58,.18);
+    color:var(--ink); font-family:inherit; font-size:15.5px; letter-spacing:.06em;
+    cursor:pointer; transition:all .3s;
+  }
+  .adjourn-btn:hover{background:rgba(53,81,58,.32);}
+  .adjourn-btn:disabled{opacity:.35; cursor:default;}
+
+  .closed{text-align:center; padding:10px 0 4px;}
+  .closed .line{font-size:19px; font-style:italic; line-height:1.6; color:var(--ink);}
+  .closed .small{color:var(--muted); font-size:13px; margin-top:14px;}
+  .reopen{
+    background:none; border:none; color:var(--dim); font-family:inherit;
+    font-size:12px; margin-top:18px; cursor:pointer; text-decoration:underline;
+    text-underline-offset:3px;
+  }
+  .reopen:hover{color:var(--muted);}
+
+  .week{display:flex; justify-content:space-between; margin:6px 0 20px;}
+  .day{text-align:center; flex:1;}
+  .day .dot{
+    width:13px; height:13px; border-radius:50%; margin:0 auto 7px;
+    border:1px solid var(--dim); background:transparent; transition:all .3s;
+  }
+  .day.adj .dot{background:var(--amber); border-color:var(--amber);}
+  .day.adj.better .dot{background:var(--ok); border-color:var(--ok);}
+  .day.adj.worse .dot{background:var(--warn); border-color:var(--warn);}
+  .day.today .dot{box-shadow:0 0 0 3px rgba(126,152,115,.20);}
+  .day span{font-size:10.5px; color:var(--dim); letter-spacing:.1em;}
+
+  .scores{display:flex; gap:12px;}
+  .score{flex:1; text-align:center; padding:14px 6px; border:1px solid var(--line); border-radius:8px;}
+  .score .num{font-size:22px; color:var(--ink);}
+  .score .cap{font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); margin-top:5px;}
+  .target{color:var(--dim); font-size:12.5px; font-style:italic; margin-top:16px; line-height:1.6; text-align:center;}
+  .tripwire{
+    margin-top:16px; padding:14px 16px; border-left:2px solid var(--warn);
+    background:rgba(168,98,61,.07); color:var(--muted); font-size:13px;
+    line-height:1.6; font-style:italic; border-radius:0 6px 6px 0;
+  }
+
+  footer{text-align:center; margin-top:34px; color:var(--dim); font-size:12px; line-height:2;}
+  footer button{
+    background:none; border:none; color:var(--dim); font-family:inherit; font-size:12px;
+    cursor:pointer; text-decoration:underline; text-underline-offset:3px; margin:0 8px;
+  }
+  footer button:hover{color:var(--muted);}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Adjourn</div>
+    <h1 id="greeting">The day ends here.</h1>
+    <div class="date" id="dateline"></div>
+    <div class="epigraph" id="epigraph"></div>
+  </header>
+
+  <section>
+    <div class="label">Floors</div>
+    <div class="sub">Pass or fail, nothing else. A missed floor asks for adjustment, never punishment.</div>
+    <div id="floors"></div>
+  </section>
+
+  <section id="ritualSection">
+    <div class="label">The Shutdown</div>
+    <div id="ritualOpen">
+      <div class="sub">Three questions. Three yeses mean done — the rest belongs to the lever-holders.</div>
+      <div id="questions"></div>
+      <div class="sub" style="margin-top:22px;">Then the hands take over. Paper, not pixels.</div>
+      <div id="steps"></div>
+      <div class="sub" style="margin-top:22px;">And honestly — how does the day end?</div>
+      <div class="moods" id="moods">
+        <button class="mood" data-mood="worse">worse than it began</button>
+        <button class="mood" data-mood="neutral">level</button>
+        <button class="mood" data-mood="better">better than it began</button>
+      </div>
+      <button class="adjourn-btn" id="adjournBtn" disabled>Adjourn the day</button>
+    </div>
+    <div id="ritualClosed" class="closed hidden">
+      <div class="line" id="closingLine"></div>
+      <div class="small">Court is out of session until tomorrow.</div>
+      <button class="reopen" id="reopenBtn">reopen the record</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">The Week</div>
+    <div class="week" id="weekDots"></div>
+    <div class="scores">
+      <div class="score"><div class="num" id="sShut">–</div><div class="cap">shutdowns / 7</div></div>
+      <div class="score"><div class="num" id="sFloor">–</div><div class="cap">floors avg / 4</div></div>
+      <div class="score"><div class="num" id="sMood">–</div><div class="cap">level-or-better / 7</div></div>
+    </div>
+    <div class="target">The bar by week eight: three level-or-better days and five shutdowns a week.<br>Not zero exhaustion. Survivable.</div>
+    <div class="tripwire hidden" id="tripwire">
+      Two weeks of high compliance and the days still end worse. That is not a discipline problem —
+      it goes to the therapist this week, and the January premise gets re-examined. Enduring is a strategy, not an oath.
+    </div>
+  </section>
+
+  <footer>
+    data lives on this machine only<br>
+    <button id="exportBtn">export</button>·<button id="importBtn">import</button>
+    <input type="file" id="importFile" class="hidden" accept=".json">
+  </footer>
+</div>
+
+<script>
+(function(){
+  var KEY = "adjourn-v1";
+
+  var FLOORS = [
+    {id:"sleep", name:"Sleep window held", hint:"Same window, weekends too."},
+    {id:"move",  name:"Movement", hint:""},
+    {id:"presence", name:"One present moment", hint:"With Caitlin or the kids. Work talk banned. Sitting together counts."},
+    {id:"witness", name:"A witness", hint:"One low-effort contact this week. A text counts. The mats count."}
+  ];
+  var QUESTIONS = [
+    {id:"blockers", name:"Did I move or escalate the blockers that are mine?"},
+    {id:"truth", name:"Did I tell the truth upward, without spin?"},
+    {id:"people", name:"Did I show up for my people?"}
+  ];
+  var STEPS = [
+    {id:"tasks", name:"Tomorrow's three tasks — written on paper", hint:"Externalize, then release."},
+    {id:"journal", name:"The line in the notebook", hint:"“Today I'm leaving at work: ___.” The notebook absorbs it."},
+    {id:"close", name:"Laptop closed, keys handed over", hint:"Twenty minutes of hands or body. The maker drives now."}
+  ];
+  var EPIGRAPHS = [
+    "The workload was never the judge. The judge was the judge.",
+    "Adequate is the assignment.",
+    "You cannot go back into the park without rest.",
+    "The evidence was sufficient a long time ago.",
+    "Floors, not goals. Passes, not verdicts.",
+    "A bridge contract, with a known end and a known payout.",
+    "The miss belongs to the people who own the levers.",
+    "Balance, not elimination. The patterns had their reasons.",
+    "Slow is a speed. It is allowed.",
+    "The creative one has the keys tonight.",
+    "Done is defined in advance, or it is never done.",
+    "One more analysis will not settle what evidence cannot reach.",
+    "Rest is not a reward for finishing. There is no finishing.",
+    "Asked, answered, nothing broke."
+  ];
+  var CLOSINGS = [
+    "The judge is adjourned.",
+    "Done was defined. You met it. Court dismissed.",
+    "The record is closed. The evening is yours.",
+    "Three questions, answered. Everything else waits outside.",
+    "The keys pass to the maker. Goodnight, foreman.",
+    "Out of the park. Rest now.",
+    "Nothing more is owed today. Not one thing."
+  ];
+
+  // ---------- storage ----------
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {days:{}}; } catch(e){ return {days:{}}; } }
+  function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
+  var db = load();
+
+  function todayKey(d){
+    d = d || new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function blank(){ return {floors:{}, q:{}, steps:{}, mood:null, adjourned:false}; }
+  function day(k){ if(!db.days[k]) db.days[k] = blank(); return db.days[k]; }
+  var TK = todayKey();
+  var today = day(TK);
+
+  // ---------- header ----------
+  var now = new Date();
+  var dow = now.getDay(); // 0 Sun
+  var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  document.getElementById("dateline").textContent = dayNames[dow]+", "+months[now.getMonth()]+" "+now.getDate();
+  var seed = Math.floor(now.getTime()/86400000);
+  document.getElementById("epigraph").textContent = "“"+EPIGRAPHS[seed % EPIGRAPHS.length]+"”";
+  var isJits = (dow===2 || dow===4);
+  FLOORS[1].hint = isJits ? "Jujitsu night. Immovable — work is never a reason." : "Twenty minutes, RA-appropriate. On flare days, range-of-motion is a pass.";
+
+  // ---------- row builder ----------
+  function buildRows(containerId, items, store){
+    var box = document.getElementById(containerId);
+    box.innerHTML = "";
+    items.forEach(function(it){
+      var r = document.createElement("div");
+      r.className = "row" + (store[it.id] ? " on" : "");
+      r.innerHTML = '<div class="mark">✓</div><div class="txt"><div class="name">'+it.name+'</div>'+
+        (it.hint ? '<div class="hint">'+it.hint+'</div>' : '')+'</div>';
+      r.addEventListener("click", function(){
+        store[it.id] = !store[it.id];
+        r.classList.toggle("on", !!store[it.id]);
+        save(db); refresh();
+      });
+      box.appendChild(r);
+    });
+  }
+
+  // ---------- ritual state ----------
+  var moodBox = document.getElementById("moods");
+  function paintMoods(){
+    Array.prototype.forEach.call(moodBox.children, function(b){
+      b.classList.toggle("on", b.getAttribute("data-mood")===today.mood);
+    });
+  }
+  moodBox.addEventListener("click", function(e){
+    var b = e.target.closest(".mood"); if(!b) return;
+    today.mood = b.getAttribute("data-mood");
+    save(db); paintMoods(); refresh();
+  });
+
+  var btn = document.getElementById("adjournBtn");
+  function ritualReady(){
+    var qDone = QUESTIONS.every(function(q){ return today.q[q.id]; });
+    var sDone = STEPS.every(function(s){ return today.steps[s.id]; });
+    return (qDone || sDone || true) && !!today.mood; // mood is the only hard requirement; checks are honest, not gates
+  }
+  btn.addEventListener("click", function(){
+    today.adjourned = true;
+    save(db); render();
+  });
+  document.getElementById("reopenBtn").addEventListener("click", function(){
+    today.adjourned = false;
+    save(db); render();
+  });
+
+  function refresh(){
+    btn.disabled = !ritualReady();
+    renderWeek();
+  }
+
+  // ---------- week ----------
+  function weekDates(){
+    var d = new Date(); var wd = (d.getDay()+6)%7; // Mon=0
+    var mon = new Date(d); mon.setDate(d.getDate()-wd);
+    var out = [];
+    for(var i=0;i<7;i++){ var x = new Date(mon); x.setDate(mon.getDate()+i); out.push(x); }
+    return out;
+  }
+  function floorsHit(rec){
+    var n=0; FLOORS.forEach(function(f){ if(rec.floors[f.id]) n++; }); return n;
+  }
+  function renderWeek(){
+    var dots = document.getElementById("weekDots"); dots.innerHTML = "";
+    var labels = ["M","T","W","T","F","S","S"];
+    var shut=0, moodOk=0, fSum=0, fDays=0;
+    weekDates().forEach(function(d,i){
+      var k = todayKey(d); var rec = db.days[k];
+      var el = document.createElement("div"); el.className = "day";
+      if(k===TK) el.className += " today";
+      if(rec && rec.adjourned){
+        el.className += " adj" + (rec.mood==="better" ? " better" : rec.mood==="worse" ? " worse" : "");
+        shut++;
+      }
+      if(rec && (rec.mood==="neutral"||rec.mood==="better")) moodOk++;
+      if(rec){ fSum += floorsHit(rec); fDays++; }
+      el.innerHTML = '<div class="dot"></div><span>'+labels[i]+'</span>';
+      dots.appendChild(el);
+    });
+    document.getElementById("sShut").textContent = shut;
+    document.getElementById("sFloor").textContent = fDays ? (Math.round(fSum/fDays*10)/10) : "–";
+    document.getElementById("sMood").textContent = moodOk;
+    tripwire();
+  }
+
+  function tripwire(){
+    // last 14 completed days: high compliance + days still ending worse
+    var keys = Object.keys(db.days).sort().slice(-14);
+    if(keys.length < 12) return;
+    var adj=0, worse=0, rated=0;
+    keys.forEach(function(k){
+      var r = db.days[k];
+      if(r.adjourned) adj++;
+      if(r.mood){ rated++; if(r.mood==="worse") worse++; }
+    });
+    if(adj >= 9 && rated >= 9 && (worse/rated) > 0.6){
+      document.getElementById("tripwire").classList.remove("hidden");
+    }
+  }
+
+  // ---------- render ----------
+  function render(){
+    buildRows("floors", FLOORS, today.floors);
+    buildRows("questions", QUESTIONS, today.q);
+    buildRows("steps", STEPS, today.steps);
+    paintMoods();
+    var open = document.getElementById("ritualOpen");
+    var closed = document.getElementById("ritualClosed");
+    if(today.adjourned){
+      open.classList.add("hidden"); closed.classList.remove("hidden");
+      document.getElementById("closingLine").textContent = CLOSINGS[seed % CLOSINGS.length];
+      document.getElementById("greeting").textContent = "The day is adjourned.";
+    } else {
+      open.classList.remove("hidden"); closed.classList.add("hidden");
+      document.getElementById("greeting").textContent = "The day ends here.";
+    }
+    refresh();
+  }
+
+  // ---------- export / import ----------
+  document.getElementById("exportBtn").addEventListener("click", function(){
+    var blob = new Blob([JSON.stringify(db,null,2)], {type:"application/json"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "adjourn-backup-"+TK+".json";
+    a.click();
+  });
+  document.getElementById("importBtn").addEventListener("click", function(){
+    document.getElementById("importFile").click();
+  });
+  document.getElementById("importFile").addEventListener("change", function(e){
+    var f = e.target.files[0]; if(!f) return;
+    var rd = new FileReader();
+    rd.onload = function(){
+      try{
+        var incoming = JSON.parse(rd.result);
+        if(incoming && incoming.days){
+          Object.keys(incoming.days).forEach(function(k){ db.days[k] = incoming.days[k]; });
+          save(db); today = day(TK); render();
+        }
+      }catch(err){ alert("That file didn't read as a backup."); }
+    };
+    rd.readAsText(f);
+  });
+
+  render();
+
+  // offline support when hosted (no-op when opened as a local file)
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+    try { navigator.serviceWorker.register("sw.js"); } catch(e) {}
+  }
+})();
+</script>
+</body>
+</html>
