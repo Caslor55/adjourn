@@ -136,18 +136,18 @@
 
   <section>
     <div class="label">Floors</div>
-    <div class="sub">Pass or fail, nothing else. A missed floor asks for adjustment, never punishment.</div>
+    <div class="sub">Pass or fail. Miss one, adjust tomorrow, move on.</div>
     <div id="floors"></div>
   </section>
 
   <section id="ritualSection">
     <div class="label">The Shutdown</div>
     <div id="ritualOpen">
-      <div class="sub">Three questions. Three yeses mean done — the rest belongs to the lever-holders.</div>
+      <div class="sub">Three questions. Three yeses and the day is done.</div>
       <div id="questions"></div>
-      <div class="sub" style="margin-top:22px;">Then the hands take over. Paper, not pixels.</div>
+      <div class="sub" style="margin-top:22px;">Then pick up the pen.</div>
       <div id="steps"></div>
-      <div class="sub" style="margin-top:22px;">And honestly — how does the day end?</div>
+      <div class="sub" style="margin-top:22px;">And honestly, how did today end?</div>
       <div class="moods" id="moods">
         <button class="mood" data-mood="worse">worse than it began</button>
         <button class="mood" data-mood="neutral">level</button>
@@ -170,10 +170,10 @@
       <div class="score"><div class="num" id="sFloor">–</div><div class="cap">floors avg / 4</div></div>
       <div class="score"><div class="num" id="sMood">–</div><div class="cap">level-or-better / 7</div></div>
     </div>
-    <div class="target">The bar by week eight: three level-or-better days and five shutdowns a week.<br>Not zero exhaustion. Survivable.</div>
+    <div class="target">The week-eight bar is three level-or-better days and five shutdowns.<br>That counts as winning.</div>
     <div class="tripwire hidden" id="tripwire">
-      Two weeks of high compliance and the days still end worse. That is not a discipline problem —
-      it goes to the therapist this week, and the January premise gets re-examined. Enduring is a strategy, not an oath.
+      Two weeks of doing everything right and the days still end worse. Discipline isn't the problem here.
+      Bring this to your therapist this week and put the January plan back on the table.
     </div>
   </section>
 
@@ -200,34 +200,34 @@
     {id:"people", name:"Did I show up for my people?"}
   ];
   var STEPS = [
-    {id:"tasks", name:"Tomorrow's three tasks — written on paper", hint:"Externalize, then release."},
-    {id:"journal", name:"The line in the notebook", hint:"“Today I'm leaving at work: ___.” The notebook absorbs it."},
-    {id:"close", name:"Laptop closed, keys handed over", hint:"Twenty minutes of hands or body. The maker drives now."}
+    {id:"tasks", name:"Tomorrow's three tasks, written on paper", hint:"Get them out of your head so it can rest."},
+    {id:"journal", name:"The line in the notebook", hint:"“Today I'm leaving at work: ___.” Let the notebook hold it overnight."},
+    {id:"close", name:"Laptop closed", hint:"Twenty minutes of building, walking, or making something."}
   ];
   var EPIGRAPHS = [
-    "The workload was never the judge. The judge was the judge.",
+    "The judge can wait until tomorrow. He'll still be wrong.",
     "Adequate is the assignment.",
-    "You cannot go back into the park without rest.",
-    "The evidence was sufficient a long time ago.",
-    "Floors, not goals. Passes, not verdicts.",
-    "A bridge contract, with a known end and a known payout.",
-    "The miss belongs to the people who own the levers.",
-    "Balance, not elimination. The patterns had their reasons.",
-    "Slow is a speed. It is allowed.",
-    "The creative one has the keys tonight.",
-    "Done is defined in advance, or it is never done.",
-    "One more analysis will not settle what evidence cannot reach.",
-    "Rest is not a reward for finishing. There is no finishing.",
-    "Asked, answered, nothing broke."
+    "You can't go back into the park without rest.",
+    "The evidence was enough a long time ago.",
+    "Just hit the floors.",
+    "Five months. You know the terms.",
+    "Let the number miss. Nobody resourced it to hit.",
+    "The team is running. That was the job.",
+    "Slow is still moving.",
+    "Whatever got left undone was never yours to finish alone.",
+    "Tuesday and Thursday belong to the mats.",
+    "One more analysis won't settle it. It never has.",
+    "Nobody hands out medals for skipping rest.",
+    "You asked for what you needed and nothing broke."
   ];
   var CLOSINGS = [
     "The judge is adjourned.",
-    "Done was defined. You met it. Court dismissed.",
+    "You met the definition of done. Court dismissed.",
     "The record is closed. The evening is yours.",
-    "Three questions, answered. Everything else waits outside.",
-    "The keys pass to the maker. Goodnight, foreman.",
-    "Out of the park. Rest now.",
-    "Nothing more is owed today. Not one thing."
+    "Three yeses. Everything else can wait outside.",
+    "The maker has the keys tonight.",
+    "You're out of the park. Go rest.",
+    "Nothing else is owed today."
   ];
 
   // ---------- storage ----------
@@ -253,7 +253,7 @@
   var seed = Math.floor(now.getTime()/86400000);
   document.getElementById("epigraph").textContent = "“"+EPIGRAPHS[seed % EPIGRAPHS.length]+"”";
   var isJits = (dow===2 || dow===4);
-  FLOORS[1].hint = isJits ? "Jujitsu night. Immovable — work is never a reason." : "Twenty minutes, RA-appropriate. On flare days, range-of-motion is a pass.";
+  FLOORS[1].hint = isJits ? "Jujitsu tonight. Work doesn't get to take this one." : "Twenty minutes, whatever the joints allow. On flare days, gentle stretching counts.";
 
   // ---------- row builder ----------
   function buildRows(containerId, items, store){
